@@ -84,31 +84,18 @@ class RoleCrudController extends CrudController
         // Grupo para los permisos de administrador
         CRUD::group(
             CRUD::field([
-                'label'     => 'Permisos de Administrador',
+                'label'     => 'Permisos de posibles',
                 'type'      => 'checklist',
-                'name'      => 'permissions_admin',
+                'name'      => 'permissions',
                 'entity'    => 'permissions',
                 'attribute' => 'name',
-                'model'     => "Spatie\Permission\Models\Permission",
+                'model'     => 'Spatie\Permission\Models\Permission',
                 'pivot'     => true,
                 'show_select_all' => true,
-                'options' => (function ($query) {
-                    return $query->whereLike('name', 'admin.%');
-                }),
+                // 'options' => (function ($query) {
+                //     return $query->whereLike('name', 'admin.%');
+                // }),
             ]),
-            CRUD::field([
-                'label'     => 'Permisos de clientes',
-                'type'      => 'checklist',
-                'name'      => 'permissions_clients',
-                'entity'    => 'permissions',
-                'attribute' => 'name',
-                'model'     => "Spatie\Permission\Models\Permission",
-                'pivot'     => true,
-                'show_select_all' => true,
-                'options' => (function ($query) {
-                    return $query->whereLike('name', 'clients.%');
-                }),
-            ])
         )->tab('Permisos');
 
         // Grupo para los permisos de administrador
