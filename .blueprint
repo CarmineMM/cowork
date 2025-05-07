@@ -1,2 +1,11 @@
+created:
+    - database/factories/RoomFactory.php
+    - database/factories/ReservationFactory.php
+    - database/migrations/2025_05_07_014716_create_rooms_table.php
+    - database/migrations/2025_05_07_014717_create_reservations_table.php
+    - app/Models/Room.php
+    - app/Models/Reservation.php
 models:
     User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
+    Room: { name: string, description: 'string nullable', timestamps: timestamps, softdeletes: softDeletes }
+    Reservation: { reservation_time: timestamp, status: 'unsignedTinyInteger default:1', timestamps: timestamps, softdeletes: softDeletes, relationships: { belongsTo: 'Room, User' } }

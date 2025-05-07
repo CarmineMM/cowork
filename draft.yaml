@@ -2,6 +2,15 @@ models:
   Room:
     name: string
     description: string nullable
+    timestamps: true
+    softDeletes: true
+  Reservation:
+    reservation_time: timestamp
+    status: unsignedTinyInteger default:1
+    timestamps: true
+    softDeletes: true
+    relationships:
+      belongsTo: Room, User
 
 controllers:
   # ...
