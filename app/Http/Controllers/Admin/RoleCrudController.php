@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Role;
+use App\Policies\RolePolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -28,6 +30,31 @@ class RoleCrudController extends CrudController
         CRUD::setModel(\App\Models\Role::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role');
         CRUD::setEntityNameStrings('role', 'roles');
+
+
+        // Verificar permisos para cada operación
+        $this->crud->denyAccess(['list', 'create', 'update', 'delete', 'show']);
+        $rolePolicy = new RolePolicy;
+
+        if ($rolePolicy->viewAny(backpack_user())) {
+            $this->crud->allowAccess('list');
+        }
+
+        if (backpack_user()->can('admin.roles.index')) {
+            $this->crud->allowAccess('show');
+        }
+
+        if ($rolePolicy->create(backpack_user())) {
+            $this->crud->allowAccess('create');
+        }
+
+        if (backpack_user()->can('admin.roles.update')) {
+            $this->crud->allowAccess('update');
+        }
+
+        if (backpack_user()->can('admin.roles.delete')) {
+            $this->crud->allowAccess('delete');
+        }
     }
 
     /**
@@ -38,12 +65,7 @@ class RoleCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb(); // set columns from db columns.
-
-        /**
-         * Columns can be defined using the fluent syntax:
-         * - CRUD::column('price')->type('number');
-         */
+        CRUD::column('name');
     }
 
     /**
@@ -55,9 +77,42 @@ class RoleCrudController extends CrudController
     protected function setupCreateOperation()
     {
         CRUD::setValidation([
-            // 'name' => 'required|min:2',
+            'name' => 'required|min:2',
         ]);
-        CRUD::setFromDb(); // set fields from db columns.
+        CRUD::field('name')->label('Nombre del Rol')->tab('Información');
+
+        // Grupo para los permisos de administrador
+        CRUD::group(
+            CRUD::field([
+                'label'     => 'Permisos de Administrador',
+                'type'      => 'checklist',
+                'name'      => 'permissions_admin',
+                'entity'    => 'permissions',
+                'attribute' => 'name',
+                'model'     => "Spatie\Permission\Models\Permission",
+                'pivot'     => true,
+                'show_select_all' => true,
+                'options' => (function ($query) {
+                    return $query->whereLike('name', 'admin.%');
+                }),
+            ]),
+            CRUD::field([
+                'label'     => 'Permisos de clientes',
+                'type'      => 'checklist',
+                'name'      => 'permissions_clients',
+                'entity'    => 'permissions',
+                'attribute' => 'name',
+                'model'     => "Spatie\Permission\Models\Permission",
+                'pivot'     => true,
+                'show_select_all' => true,
+                'options' => (function ($query) {
+                    return $query->whereLike('name', 'clients.%');
+                }),
+            ])
+        )->tab('Permisos');
+
+        // Grupo para los permisos de administrador
+
 
         /**
          * Fields can be defined using the fluent syntax:

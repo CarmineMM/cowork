@@ -20,3 +20,7 @@ User::create([
     'password' => 1234,
 ]);
 ```
+
+# Tener el .env
+
+Asegurarse que el .env la **APP_URL** corresponda a la url donde se están lanzando el proyecto.
