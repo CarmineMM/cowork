@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Room extends Model
 {
-    use CrudTrait;
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, CrudTrait;
 
     /**
      * The attributes that are mass assignable.
