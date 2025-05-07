@@ -1,0 +1,7 @@
+models:
+  Room:
+    name: string
+    description: string nullable
+
+controllers:
+  # ...
