@@ -10,4 +10,6 @@ class Permissions
         'admin.roles.update',
         'admin.roles.delete',
     ];
+
+    public array $clientPermissions = [];
 }
