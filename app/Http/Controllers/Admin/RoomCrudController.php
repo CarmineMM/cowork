@@ -67,6 +67,18 @@ class RoomCrudController extends CrudController
         // CRUD::setFromDb(); // set columns from db columns.
         CRUD::column('name')->label('Nombre de la sala');
         CRUD::column('description')->label('Descripción');
+        CRUD::column('status')
+            ->label('Estado de la sala')
+            ->value(fn($entry) => $entry->status->getLabel())
+            ->wrapper([
+                'element' => 'span',
+                'class' => function ($crud, $column, $entry, $related_key) {
+                    return match ($entry->status->value) {
+                        RoomStatus::Available->value => 'badge badge-primary',
+                        RoomStatus::NotAvailable->value => 'badge badge-secondary',
+                    };
+                },
+            ]);
 
         /**
          * Columns can be defined using the fluent syntax:

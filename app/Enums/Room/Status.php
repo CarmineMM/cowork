@@ -2,25 +2,26 @@
 
 namespace App\Enums\Room;
 
+use App\Traits\HasEnumLabels;
+
 /**
  * Estado de la sala
  */
 enum Status: int
 {
+    use HasEnumLabels;
+
     case NotAvailable = 0; # No disponible
     case Available = 1;    # Sala disponible para reservas
     //.. Otros status como, en reparaciones...
 
     /**
-     * Obtiene las etiquetas personalizadas para cada estado
+     * Label
      *
-     * @return array<int, string>
+     * @return string
      */
-    public static function getLabels(): array
+    public function getLabel(): string
     {
-        return [
-            self::NotAvailable->value => 'No Disponible',
-            self::Available->value => 'Disponible',
-        ];
+        return __("room.status.{$this->value}");
     }
 }
