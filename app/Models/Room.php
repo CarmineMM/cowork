@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Room\Status as RoomStatus;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class Room extends Model
         'description',
         'initial_availability_time',
         'final_availability_time',
+        'status',
     ];
 
     /**
@@ -30,7 +32,8 @@ class Room extends Model
      */
     protected $casts = [
         'initial_availability_time' => 'timestamp',
-        'final_availability_time' => 'timestamp'
+        'final_availability_time' => 'timestamp',
+        'status' => RoomStatus::class,
     ];
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Room\Status as RoomStatus;
 use App\Models\Room;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->unsignedTinyInteger('status')->default(RoomStatus::Available->value);
             $table->timestamp('initial_availability_time')->nullable()->comment('Servirá (A futuro) para dar la hora de disponibilidad inicial');
             $table->timestamp('final_availability_time')->nullable()->comment('Servirá (A futuro) para dar la hora de disponibilidad final');
             $table->timestamps();

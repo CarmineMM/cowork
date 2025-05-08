@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Room\Status as RoomStatus;
 use App\Http\Requests\ReservationRequest;
+use App\Models\Room;
 use App\Policies\ReservationPolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -82,7 +84,25 @@ class ReservationCrudController extends CrudController
     protected function setupCreateOperation()
     {
         CRUD::setValidation(ReservationRequest::class);
-        CRUD::setFromDb(); // set fields from db columns.
+        // CRUD::setFromDb(); // set fields from db columns.
+        CRUD::field('title')->type('number')->label('Motivo de la reservación');
+        CRUD::field('start_reservation')
+            ->type('datetime')
+            ->label('Fecha de la reservación')
+            ->hint('Todas las reservaciones tendrán una (1) hora de duración');
+
+        CRUD::field([  // Select
+            'label'     => 'Sala de la reservación',
+            'type'      => 'select',
+            'name'      => 'room_id', // the db column for the foreign key
+
+            'model'     => Room::class, // related model
+            'attribute' => 'name',
+
+            'options'   => (function ($query) {
+                return $query->where('status', RoomStatus::Available)->get();
+            }),
+        ]);
 
         /**
          * Fields can be defined using the fluent syntax:

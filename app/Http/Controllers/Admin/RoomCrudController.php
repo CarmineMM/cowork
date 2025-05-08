@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Room\Status;
 use App\Http\Requests\RoomRequest;
 use App\Policies\RoomPolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -85,6 +86,14 @@ class RoomCrudController extends CrudController
         // CRUD::setFromDb(); // set fields from db columns.
         CRUD::field('name')->label('Nombre de la sala');
         CRUD::field('description')->label('Descripción')->type('textarea');
+        CRUD::field([
+            'name'  => 'status',
+            'label' => 'Status',
+            'type'  => 'enum',
+            // optional, specify the enum options with custom display values
+            'enum_class' => Status::class,
+        ]);
+
         /**
          * Fields can be defined using the fluent syntax:
          * - CRUD::field('price')->type('number');
