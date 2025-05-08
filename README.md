@@ -35,4 +35,4 @@ Hay un par de cosas en las que tuve problemas con Backpack por que eran features
 por suerte backpack basa sus CRUDs en controladores asi que no fue muy complejo hacer un método que pudiera cumplir la expectativa de exportar las reservaciones...
 Aunque, no pude cumplir la necesidad de filtrar reservaciones por sala.
 
-> **Nota:** Fue mi primera vez con Backpack, me tomare mi tiempo de conocerlo un poco mas indistintamente de los resultados de esta prueba. (Aunque siento que a backpack le falta mucho para ganarle a Filament 😄).
+> **Nota:** Había usado backpack por encima pero, me tomare mi tiempo de conocerlo un poco mas indistintamente de los resultados de esta prueba. (Aunque siento que a backpack le falta mucho para ganarle a Filament 😄).
