@@ -15,10 +15,22 @@ enum Status: int
      */
     public static function getLabels(): array
     {
-        return [
-            self::Rejected->value => 'Rechazado',
-            self::Pending->value => 'Pendiente',
-            self::Approved->value => 'Aprobado',
-        ];
+        $cases = [];
+
+        foreach (self::cases() as $case) {
+            $cases[$case->value] = $case->getLabel();
+        }
+
+        return $cases;
+    }
+
+    /**
+     * Label
+     *
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return __("reservation.status.{$this->value}");
     }
 }

@@ -19,9 +19,10 @@ class ReservationPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Reservation $reservation): bool
+    public function view(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.index') || ($user->can('client.reservations.index') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.index') ||
+            ($reservation && $user->can('client.reservations.index') && $reservation->user_id === $user->getKey());
     }
 
     /**
@@ -35,17 +36,19 @@ class ReservationPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Reservation $reservation): bool
+    public function update(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.update') || ($user->can('client.reservations.update') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.update') ||
+            ($reservation && $user->can('client.reservations.update') && $reservation->user_id === $user->getKey());
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Reservation $reservation): bool
+    public function delete(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.delete') || ($user->can('client.reservations.delete') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.delete') ||
+            ($reservation && $user->can('client.reservations.delete') && $reservation->user_id === $user->getKey());
     }
 
     /**

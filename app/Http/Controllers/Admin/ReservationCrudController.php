@@ -46,7 +46,7 @@ class ReservationCrudController extends CrudController
             $this->crud->allowAccess('list');
         }
 
-        if ($entity && $reservationPolicy->view(backpack_user(), $entity)) {
+        if ($reservationPolicy->view(backpack_user(), $entity)) {
             $this->crud->allowAccess('show');
         }
 
@@ -54,11 +54,11 @@ class ReservationCrudController extends CrudController
             $this->crud->allowAccess('create');
         }
 
-        if ($entity && $reservationPolicy->update(backpack_user(), $entity)) {
+        if ($reservationPolicy->update(backpack_user(), $entity)) {
             $this->crud->allowAccess('update');
         }
 
-        if ($entity && $reservationPolicy->delete(backpack_user(), $entity)) {
+        if ($reservationPolicy->delete(backpack_user(), $entity)) {
             $this->crud->allowAccess('delete');
         }
     }
@@ -74,10 +74,44 @@ class ReservationCrudController extends CrudController
         // CRUD::setFromDb(); // set columns from db columns.
         CRUD::column('title')->label('Titulo de la reservación');
 
-        /**
-         * Columns can be defined using the fluent syntax:
-         * - CRUD::column('price')->type('number');
-         */
+        if (!backpack_user()->can('admin.reservations.index')) {
+            CRUD::column('status')
+                ->label('Estado de la reservación')
+                ->value(fn($entry) => $entry->status->getLabel())
+                ->wrapper([
+                    'element' => 'span',
+                    'class' => function ($crud, $column, $entry, $related_key) {
+                        return match ($entry->status) {
+                            ReservationStatus::Approved => 'badge badge-success',
+                            ReservationStatus::Pending => 'badge badge-info',
+                            ReservationStatus::Rejected => 'badge badge-error',
+                        };
+                    },
+                ]);
+        }
+
+        CRUD::column('start_reservation')->type('datetime')->label('Inicio de la reservación');
+        CRUD::column('end_reservation')->type('datetime')->label('Finalización');
+
+        // Mostrar la persona que reserva en caso de ser un administrador
+        if (backpack_user()->can('admin.reservations.index')) {
+            $this->crud->addColumn([
+                'label'     => 'Usuario que reserva', // Table column heading
+                'name'      => 'user_id', // the column that contains the ID of that connected entity;
+                'entity'    => 'user', // the method that defines the relationship in your Model
+                'attribute' => 'name', // foreign key attribute that is shown to user
+            ]);
+
+            // Ademas, para ser mas rápido, se podrá cambiar el estatus de las reservaciones desde la propia lista
+            // TODO: No se si me estoy equivocando, según la documentación esto debería ser un select, pero no lo es...
+            $this->crud->addColumn([
+                'label'     => 'Estado de la reserva',
+                'type'      => 'select_from_array',
+                'name'      => 'status',
+                'options'   => ReservationStatus::getLabels(),
+                'value'     => fn($entry) => $entry->status->value
+            ]);
+        }
     }
 
     /**
@@ -148,6 +182,11 @@ class ReservationCrudController extends CrudController
                 $entry->end_reservation = Carbon::parse($entry->start_reservation)->addHour();
             }
         });
+    }
+
+    protected function setupShowOperation()
+    {
+        $this->setupListOperation();
     }
 
     /**
