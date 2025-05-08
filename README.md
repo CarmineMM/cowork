@@ -24,3 +24,15 @@ User::create([
 # Tener el .env
 
 Asegurarse que el .env la **APP_URL** corresponda a la url donde se están lanzando el proyecto.
+
+# Consideraciones
+
+Hice uso de la mayor cantidad de conceptos de Laravel que vi que podia usar, como los Enums, Traits, Policies, Request, Rules...
+Probablemente me hubiera gustado hacer uso de los Notifications y Mails (Como notificar a un usuario que su reservación) fue aprobada o rechazada,
+los Jobs (Para mandar Emails o las mismas notificaciones), Observadores (para saber cuando una reservación fue creada en pendiente y necesita probación), en fin...
+
+Hay un par de cosas en las que tuve problemas con Backpack por que eran features PRO, como por ejemplo los filtros o las exportaciones a Excel,
+por suerte backpack basa sus CRUDs en controladores asi que no fue muy complejo hacer un método que pudiera cumplir la expectativa de exportar las reservaciones...
+Aunque, no pude cumplir la necesidad de filtrar reservaciones por sala.
+
+> **Nota:** Fue mi primera vez con Backpack, me tomare mi tiempo de conocerlo un poco mas indistintamente de los resultados de esta prueba. (Aunque siento que a backpack le falta mucho para ganarle a Filament 😄).

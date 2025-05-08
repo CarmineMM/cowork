@@ -134,7 +134,9 @@ class ReservationCrudController extends CrudController
      */
     public function exportExcel()
     {
-        $reservations = Reservation::with(['user', 'room'])->get();
+        $reservations = Reservation::with(['user', 'room'])
+            ->when(!backpack_user()->can('admin.reservations.index'), fn($query) => $query->where('user_id', backpack_user()->id))
+            ->get();
 
         $headers = [
             'Cliente',
