@@ -81,6 +81,17 @@ class ReservationCrudController extends CrudController
             'attribute' => 'name', // foreign key attribute that is shown to user
         ]);
 
+        // Filtros son del backpack PRO
+        // $this->crud->addFilter([
+        //     'type'  => 'select',
+        //     'name'  => 'room_id',
+        //     'label' => 'Filtrar por sala'
+        // ], function () {
+        //     return \App\Models\Room::pluck('name', 'id')->toArray();
+        // }, function ($value) {
+        //     $this->crud->addClause('where', 'room_id', $value);
+        // });
+
         if (!backpack_user()->can('admin.reservations.index')) {
             CRUD::column('status')
                 ->label('Estado de la reservación')
