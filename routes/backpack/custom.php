@@ -19,6 +19,7 @@ Route::group([
     Route::crud('room', 'RoomCrudController');
     Route::crud('role', 'RoleCrudController');
     Route::crud('reservation', 'ReservationCrudController');
+    Route::get('reservation/export-excel', 'ReservationCrudController@exportExcel');
 }); // this should be the absolute last line of this file
 
 /**

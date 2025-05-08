@@ -37,6 +37,9 @@ class ReservationCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/reservation');
         CRUD::setEntityNameStrings('Reservación', 'Reservaciones');
 
+        // Agregar botón de exportación
+        $this->crud->addButton('top', 'export_excel', 'view', 'vendor.backpack.crud.buttons.export_excel', 'end');
+
         // Verificar permisos para cada operación
         $this->crud->denyAccess(['list', 'create', 'update', 'delete', 'show']);
         $reservationPolicy = new ReservationPolicy;
@@ -130,6 +133,59 @@ class ReservationCrudController extends CrudController
                 'value'     => fn($entry) => $entry->status->value
             ]);
         }
+    }
+
+    /**
+     * Exportar reservaciones a Excel
+     */
+    public function exportExcel()
+    {
+        $reservations = Reservation::with(['user', 'room'])->get();
+
+        $headers = [
+            'Cliente',
+            'Sala',
+            'Hora de reserva',
+            'Hora de finalización',
+            'Motivo',
+            'Estado',
+            'Duración (horas)'
+        ];
+
+        $rows = $reservations->map(function ($reservation) {
+            return [
+                $reservation->user->name,
+                $reservation->room->name,
+                $reservation->start_reservation->format('Y-m-d H:i'),
+                $reservation->end_reservation->format('Y-m-d H:i'),
+                $reservation->title,
+                $reservation->status->getLabel(),
+                $reservation->start_reservation->diffInHours($reservation->end_reservation)
+            ];
+        });
+
+        $filename = 'reservaciones-' . now()->format('Y-m-d') . '.csv';
+
+        $handle = fopen('php://temp', 'r+');
+
+        // Agregar BOM para UTF-8
+        fputs($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        // Escribir headers
+        fputcsv($handle, $headers);
+
+        // Escribir filas
+        foreach ($rows as $row) {
+            fputcsv($handle, $row);
+        }
+
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     /**
