@@ -6,6 +6,8 @@ use App\Models\Role;
 use App\Policies\RolePolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Permission;
 
 /**
  * Class RoleCrudController
@@ -77,26 +79,29 @@ class RoleCrudController extends CrudController
     protected function setupCreateOperation()
     {
         CRUD::setValidation([
-            'name' => 'required|min:2',
+            'name' => [
+                'required',
+                'min:2',
+                Rule::unique((new Role)->getTable())
+                    ->ignore($this->crud->getCurrentEntryId())
+            ],
         ]);
         CRUD::field('name')->label('Nombre del Rol')->tab('Información');
 
         // Grupo para los permisos de administrador
-        CRUD::group(
-            CRUD::field([
-                'label'     => 'Permisos de posibles',
-                'type'      => 'checklist',
-                'name'      => 'permissions',
-                'entity'    => 'permissions',
-                'attribute' => 'name',
-                'model'     => 'Spatie\Permission\Models\Permission',
-                'pivot'     => true,
-                'show_select_all' => true,
-                // 'options' => (function ($query) {
-                //     return $query->whereLike('name', 'admin.%');
-                // }),
-            ]),
-        )->tab('Permisos');
+        CRUD::field([
+            'label'     => 'Permisos de posibles',
+            'type'      => 'checklist',
+            'name'      => 'permissions',
+            'entity'    => 'permissions',
+            'attribute' => 'name',
+            'model'     => Permission::class,
+            'pivot'     => true,
+            'show_select_all' => true,
+            // 'options' => (function ($query) {
+            //     return $query->whereLike('name', 'admin.%');
+            // }),
+        ])->tab('Permisos');
 
         // Grupo para los permisos de administrador
 
