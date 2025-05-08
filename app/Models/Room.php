@@ -19,5 +19,27 @@ class Room extends Model
     protected $fillable = [
         'name',
         'description',
+        'initial_availability_time',
+        'final_availability_time',
     ];
+
+    /**
+     * Los atributos que deben ser convertidos a tipos nativos.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'initial_availability_time' => 'timestamp',
+        'final_availability_time' => 'timestamp'
+    ];
+
+    /**
+     * Obtiene las reservaciones de la sala.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reservations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

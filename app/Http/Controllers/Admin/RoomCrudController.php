@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\RoomRequest;
+use App\Policies\RoomPolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -29,6 +30,29 @@ class RoomCrudController extends CrudController
         CRUD::setModel(\App\Models\Room::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/room');
         CRUD::setEntityNameStrings('room', 'rooms');
+
+        $this->crud->denyAccess(['list', 'create', 'update', 'delete', 'show']);
+        $roomPolicy = new RoomPolicy;
+
+        if ($roomPolicy->viewAny(backpack_user())) {
+            $this->crud->allowAccess('list');
+        }
+
+        if (backpack_user()->can('admin.rooms.index')) {
+            $this->crud->allowAccess('show');
+        }
+
+        if ($roomPolicy->create(backpack_user())) {
+            $this->crud->allowAccess('create');
+        }
+
+        if (backpack_user()->can('admin.rooms.update')) {
+            $this->crud->allowAccess('update');
+        }
+
+        if (backpack_user()->can('admin.rooms.delete')) {
+            $this->crud->allowAccess('delete');
+        }
     }
 
     /**
