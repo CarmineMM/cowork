@@ -19,6 +19,7 @@ class Reservation extends Model
      * @var array
      */
     protected $fillable = [
+        'title',
         'start_reservation',
         'end_reservation',
         'status',

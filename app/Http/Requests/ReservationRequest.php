@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ReservationDate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReservationRequest extends FormRequest
@@ -24,9 +25,22 @@ class ReservationRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            // 'name' => 'required|min:5|max:255'
+        $rules = [
+            'title' => 'required|min:5|max:255',
+            'start_reservation' => [
+                'required',
+                'date',
+                new ReservationDate
+            ],
+            'room_id' => 'required|exists:rooms,id'
         ];
+
+        if (backpack_user()->can('admin.reservations.create')) {
+            $rules['user_id'] = 'required|exists:users,id';
+        }
+
+
+        return $rules;
     }
 
     /**

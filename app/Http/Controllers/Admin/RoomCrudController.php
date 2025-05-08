@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Room\Status;
+use App\Enums\Room\Status as RoomStatus;
 use App\Http\Requests\RoomRequest;
 use App\Policies\RoomPolicy;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -88,10 +88,11 @@ class RoomCrudController extends CrudController
         CRUD::field('description')->label('Descripción')->type('textarea');
         CRUD::field([
             'name'  => 'status',
-            'label' => 'Status',
+            'label' => 'Disponible para reservaciones',
             'type'  => 'enum',
+            'default' => RoomStatus::Available->value,
             // optional, specify the enum options with custom display values
-            'enum_class' => Status::class,
+            'options' => RoomStatus::getLabels(),
         ]);
 
         /**
