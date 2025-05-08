@@ -35,8 +35,8 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
-            'start_reservation' => 'timestamp',
-            'end_reservation' => 'timestamp',
+            'start_reservation' => 'datetime',
+            'end_reservation' => 'datetime',
             'status' => Status::class,
         ];
     }

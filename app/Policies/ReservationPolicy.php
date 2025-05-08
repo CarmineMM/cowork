@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Reservation\Status;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -21,8 +22,7 @@ class ReservationPolicy
      */
     public function view(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.index') ||
-            ($reservation && $user->can('client.reservations.index') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.index') || $user->can('client.reservations.index');
     }
 
     /**
@@ -38,8 +38,7 @@ class ReservationPolicy
      */
     public function update(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.update') ||
-            ($reservation && $user->can('client.reservations.update') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.update') || $user->can('client.reservations.update');
     }
 
     /**
@@ -47,8 +46,7 @@ class ReservationPolicy
      */
     public function delete(User $user, Reservation|bool $reservation): bool
     {
-        return $user->can('admin.reservations.delete') ||
-            ($reservation && $user->can('client.reservations.delete') && $reservation->user_id === $user->getKey());
+        return $user->can('admin.reservations.delete') || $user->can('client.reservations.delete');
     }
 
     /**

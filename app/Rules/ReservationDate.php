@@ -42,12 +42,24 @@ class ReservationDate implements ValidationRule, DataAwareRule
         // NOTA: En el futuro se podría hacer uso del end_reservation (creando un field nuevo)
         // Verificar el end_reservation, ayudara a que si en un futuro se desea hacer ese field nuevo,
         // no haya que modificar esta lógica. Sin embargo si habría que agregarlo a las rules del Request.
-        $end_reservation = $this->data['end_reservation'] ?? Carbon::parse($this->data['start_reservation'])->addHour();
+        $start_reservation = Carbon::parse($this->data['start_reservation']);
+        $end_reservation = $start_reservation->copy()->addHour();
 
-
-        // Verificar si existe alguna reservación que sea al mismo horario
+        // Verificar si existe alguna reservación que se solape
         $existing_reservation = Reservation::where('room_id', $this->data['room_id'])
-            ->whereDate('end_reservation', '>=', $end_reservation)
+
+            // Evitar chocar consigo mismo en caso que el usuario actualice
+            ->when(isset($this->data['id']), fn($query) => $query->where('id', '!=', $this->data['id']))
+
+            // Verificar la disponibilidad según rango de fechas
+            ->where(function ($query) use ($start_reservation, $end_reservation) {
+                $query->whereBetween('start_reservation', [$start_reservation, $end_reservation])
+                    ->orWhereBetween('end_reservation', [$start_reservation, $end_reservation])
+                    ->orWhere(function ($q) use ($start_reservation, $end_reservation) {
+                        $q->where('start_reservation', '<=', $start_reservation)
+                            ->where('end_reservation', '>=', $end_reservation);
+                    });
+            })
             ->exists();
 
         if ($existing_reservation) {

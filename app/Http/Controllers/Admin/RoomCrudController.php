@@ -101,6 +101,11 @@ class RoomCrudController extends CrudController
          */
     }
 
+    protected function setupShowOperation()
+    {
+        $this->setupListOperation();
+    }
+
     /**
      * Define what happens when the Update operation is loaded.
      *

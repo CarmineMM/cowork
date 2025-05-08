@@ -3,6 +3,10 @@
 
 <x-backpack::menu-item title="Reservaciones" icon="la la-calendar-check" :link="backpack_url('reservation')" />
 
-<x-backpack::menu-item title="Salas" icon="la la-door-open" :link="backpack_url('room')" />
+@if (backpack_user()->can('admin.rooms.index'))
+    <x-backpack::menu-item title="Salas" icon="la la-door-open" :link="backpack_url('room')" />
+@endif
 
-<x-backpack::menu-item title="Roles" icon="la la-user-shield" :link="backpack_url('role')" />
+@if (backpack_user()->can('admin.roles.index'))
+    <x-backpack::menu-item title="Roles" icon="la la-user-shield" :link="backpack_url('role')" />
+@endif

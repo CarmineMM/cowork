@@ -74,6 +74,13 @@ class ReservationCrudController extends CrudController
         // CRUD::setFromDb(); // set columns from db columns.
         CRUD::column('title')->label('Titulo de la reservación');
 
+        $this->crud->addColumn([
+            'label'     => 'Sala', // Table column heading
+            'name'      => 'room_id', // the column that contains the ID of that connected entity;
+            'entity'    => 'room', // the method that defines the relationship in your Model
+            'attribute' => 'name', // foreign key attribute that is shown to user
+        ]);
+
         if (!backpack_user()->can('admin.reservations.index')) {
             CRUD::column('status')
                 ->label('Estado de la reservación')
@@ -123,12 +130,18 @@ class ReservationCrudController extends CrudController
     protected function setupCreateOperation()
     {
         CRUD::setValidation(ReservationRequest::class);
+        $attributesShared = [];
+
+        if ($this->crud->getCurrentEntry() && $this->crud->getCurrentEntry()->status !== ReservationStatus::Pending) {
+            $attributesShared['disabled'] = 'disabled';
+        }
         // CRUD::setFromDb(); // set fields from db columns.
         CRUD::field('title')->label('Motivo de la reservación');
         CRUD::field('start_reservation')
             ->type('datetime')
             ->label('Fecha de la reservación')
-            ->hint('Todas las reservaciones tendrán una (1) hora de duración');
+            ->hint('Todas las reservaciones tendrán una (1) hora de duración')
+            ->attributes($attributesShared);
 
         CRUD::field([
             'label'     => 'Sala de la reservación',
@@ -141,6 +154,8 @@ class ReservationCrudController extends CrudController
             'options'   => (function ($query) {
                 return $query->where('status', RoomStatus::Available)->get();
             }),
+
+            'attributes' => $attributesShared,
         ]);
 
         // Si el usuario tiene permisos administrativos, el puede elegir a nombre de quien hacer la reservación
